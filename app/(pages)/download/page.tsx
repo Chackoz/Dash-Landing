@@ -1,17 +1,14 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import { Download, Check } from 'lucide-react';
+import { Download, Check, Terminal, Copy } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import Image from 'next/image';
-import { useAuth } from '@/hooks/useAuth';
-import { LoginModal } from '../../components/LoginModal';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import NavBar from '@/app/components/NavBar';
 
-// Define TypeScript interfaces
 interface Release {
   tag_name: string;
 }
-
 
 interface OSOption {
   os: string;
@@ -23,8 +20,7 @@ const DownloadPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedOS, setSelectedOS] = useState<string>("Windows");
   const [downloadStarted, setDownloadStarted] = useState<boolean>(false);
-  const [isLoginOpen, setIsLoginOpen] = useState<boolean>(false);
-  const { user, logout } = useAuth();
+  const [copySuccess, setCopySuccess] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchLatestVersion = async () => {
@@ -36,7 +32,6 @@ const DownloadPage: React.FC = () => {
         const release: Release = await response.json();
         setLatestVersion(release.tag_name);
         
-        // Detect OS on initial load
         const detectedOS = getOSSpecificDetails().os;
         setSelectedOS(detectedOS);
       } catch (error) {
@@ -74,6 +69,10 @@ const DownloadPage: React.FC = () => {
     }
   };
 
+  const getLinuxInstallCommand = (): string => {
+    return `curl -fsSL https://raw.githubusercontent.com/Chackoz/Dash-Desktop/main/install.sh | bash`;
+  };
+
   const handleDownload = (): void => {
     const downloadUrl = getDownloadUrl(selectedOS);
     if (!downloadUrl) return;
@@ -90,10 +89,19 @@ const DownloadPage: React.FC = () => {
     setTimeout(() => setDownloadStarted(false), 3000);
   };
 
+  const handleCopyCommand = async () => {
+    try {
+      await navigator.clipboard.writeText(getLinuxInstallCommand());
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy command:', err);
+    }
+  };
+
   const handleOSSelect = (os: string): void => {
     setSelectedOS(os);
   };
-
 
   const osOptions: OSOption[] = [
     { os: 'macOS', icon: '🍎' },
@@ -103,46 +111,12 @@ const DownloadPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-between w-full p-4">
-      {/* Navbar */}
-      <nav className="w-full px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-8">
-          <div className="flex items-center gap-2">
-            <h1>DASH</h1>
-          </div>
-          <div className="flex gap-6 text-sm">
-          <a href="https://github.com/Chackoz/Dash-Desktop" className="text-gray-800 hover:text-gray-600">GitHub</a>
-          <a href="https://github.com/Chackoz/Dash-Desktop/blob/master/README.md" className="text-gray-800 hover:text-gray-600">Documentation</a>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          
-          {user ? (
-            <Image
-              src={user.photoURL || "/logo.png"}
-              width={32}
-              height={32}
-              alt="Profile"
-              className="rounded-lg cursor-pointer"
-              onClick={logout}
-            />
-          ) : (
-            <Image 
-              src="/logo.png" 
-              width={32} 
-              height={32} 
-              alt="Profile" 
-              className="rounded-lg cursor-pointer"
-              onClick={() => setIsLoginOpen(true)}
-            />
-          )}
-        </div>
-      </nav>
+      <NavBar/>
       
-      <div className="max-w-3xl w-full space-y-8 text-center">
+      <div className="md:max-w-3xl w-full space-y-4 md:space-y-8 text-center flex justify-center items-center flex-col">
         <h1 className="text-4xl font-bold mb-2">Download DASH</h1>
         
-        <div className="grid grid-cols-3 gap-4 max-w-md mx-auto mb-8">
+        <div className="grid grid-cols-3 gap-4 md:max-w-md mx-auto mb-8">
           {osOptions.map(({ os, icon }) => (
             <Card 
               key={os}
@@ -157,6 +131,30 @@ const DownloadPage: React.FC = () => {
         </div>
 
         <div className="space-y-4">
+          {selectedOS === 'Linux' ? (
+            <div className="space-y-4">
+              <Alert className="text-left">
+                <Terminal className="h-4 w-4" />
+                <AlertDescription>
+                  <div className="mt-2 flex items-center justify-between bg-secondary p-2 rounded">
+                    <code className="md:text-sm max-w-[60vw] flex text-[10px]">{getLinuxInstallCommand()}</code>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleCopyCommand}
+                      className="ml-2"
+                    >
+                      {copySuccess ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </AlertDescription>
+              </Alert>
+              <p className="text-sm text-muted-foreground">
+                Or download the AppImage manually:
+              </p>
+            </div>
+          ) : null}
+
           <Button 
             size="lg" 
             className="w-full max-w-md"
@@ -182,7 +180,6 @@ const DownloadPage: React.FC = () => {
       </div>
 
       <div></div>
-      {isLoginOpen && <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />}
     </div>
   );
 };

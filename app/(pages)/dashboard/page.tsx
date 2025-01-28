@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
   LineChart,
@@ -24,29 +24,22 @@ import {
   Query,
   query,
   orderByChild,
-  limitToLast
+  limitToLast,
+  DataSnapshot,
 } from "firebase/database";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { database } from "@/lib/firebaseConfig";
 import { useAuth } from "@/hooks/useAuth";
-import { LoginModal } from "@/app/components/LoginModal";
-import ProfileMenu from "@/app/components/ProfileMenu";
+import NavBar from "@/app/components/NavBar";
+import Footer from "@/app/components/Footer";
 
-interface RawTaskData {
-  taskType: "docker" | "python";
-  status: "completed" | "failed" | "running" | "pending";
-  createdAt: string;
-  assignedTo: string;
-  createdBy: string;
-  userId: string;
-  doneUserId?:string;
+
+
+interface FirebaseDataEntry<T> {
+  [key: string]: T;
 }
 
-// Final task type after mapping (includes the Firebase key)
-interface Task extends RawTaskData {
-  id: string;
-}
-
+// Interfaces
 interface SystemMetadata {
   cpu: string;
   docker: boolean;
@@ -55,6 +48,20 @@ interface SystemMetadata {
   python: string;
   ram: string;
   rust: string;
+}
+
+interface RawTaskData {
+  taskType: "docker" | "python";
+  status: "completed" | "failed" | "running" | "pending";
+  createdAt: string;
+  assignedTo: string;
+  createdBy: string;
+  userId: string;
+  doneUserId?: string;
+}
+
+interface Task extends RawTaskData {
+  id: string;
 }
 
 interface RawPresenceData {
@@ -82,20 +89,54 @@ interface DashboardStats {
   doneFailedTasks: number;
 }
 
-interface ChartData {
-  date: string;
-  tasks: number;
-}
-
 interface TaskStatusProps {
   status: Task["status"];
 }
 
+// Reusable Components
+const TaskStatus: React.FC<TaskStatusProps> = ({ status }) => {
+  const config = {
+    completed: { icon: CheckCircle, color: "text-green-500" },
+    failed: { icon: XCircle, color: "text-red-500" },
+    running: { icon: Loader, color: "text-blue-500" },
+    pending: { icon: Clock, color: "text-orange-500" },
+  }[status];
+
+  const Icon = config.icon || Clock;
+  return (
+    <Icon
+      className={`h-4 w-4 ${config.color} ${
+        status === "running" ? "animate-spin" : ""
+      }`}
+    />
+  );
+};
+
+const StatCard: React.FC<{
+  title: string;
+  value: number;
+  icon: React.ReactNode;
+  details: React.ReactNode;
+}> = ({ title, value, icon, details }) => (
+  <Card className="w-full">
+    <CardHeader className="flex flex-row items-center justify-between pb-2">
+      <CardTitle className="text-sm font-medium">{title}</CardTitle>
+      {icon}
+    </CardHeader>
+    <CardContent>
+      <div className="text-2xl font-bold">{value}</div>
+      <div className="flex gap-2 text-xs text-muted-foreground">{details}</div>
+    </CardContent>
+  </Card>
+);
+
+
+
+// Main Component
 const DashboardPage = () => {
-  const { user, logout } = useAuth();
+  const { user} = useAuth();
   const [presenceData, setPresenceData] = useState<PresenceData[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [doneTasks, setDoneTasks] = useState<Task[]>([]);
 
   const [stats, setStats] = useState<DashboardStats>({
     totalTasks: 0,
@@ -105,54 +146,66 @@ const DashboardPage = () => {
     workersOnline: 0,
     clientsOnline: 0,
     doneTotalTasks: 0,
-  doneCompletedTasks: 0,
-  doneFailedTasks: 0
+    doneCompletedTasks: 0,
+    doneFailedTasks: 0,
   });
-  
-  const [isLoginOpen, setIsLoginOpen] = useState<boolean>(false);
 
+
+  const processPresenceData = useCallback((
+    snapshot: DataSnapshot,
+    userEmail: string
+  ): PresenceData[] => {
+    const data = snapshot.val() as FirebaseDataEntry<RawPresenceData> | null;
+    if (!data) return [];
+    
+    return Object.entries(data)
+      .map(([id, value]): PresenceData => ({
+        id,
+        ...value,
+      }))
+      .filter((node) => node.email === userEmail);
+  }, []);
+
+  const processTasksData = useCallback((
+    snapshot: DataSnapshot,
+    userId: string,
+    isDone: boolean = false
+  ): Task[] => {
+    const data = snapshot.val() as FirebaseDataEntry<RawTaskData> | null;
+    if (!data) return [];
+
+    return Object.entries(data)
+      .map(([id, value]): Task => ({
+        id,
+        ...value,
+      }))
+      .filter((task) =>
+        isDone ? task.doneUserId === userId : task.userId === userId
+      )
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+  }, []);
+
+  const chartData = useMemo(() => {
+    return tasks
+      .reduce((acc: { date: string; tasks: number }[], task) => {
+        const date = new Date(task.createdAt).toLocaleDateString();
+        const existing = acc.find((item) => item.date === date);
+        if (existing) {
+          existing.tasks += 1;
+        } else {
+          acc.push({ date, tasks: 1 });
+        }
+        return acc;
+      }, [])
+      .slice(-7);
+  }, [tasks]);
   useEffect(() => {
     if (!database || !user?.uid) return;
 
-    // Listen to presence data for user's nodes
     const presenceRef = ref(database, "presence");
-    const presenceUnsubscribe = onValue(presenceRef, (snapshot) => {
-      const data = snapshot.val();
-      if (!data) return;
-
-      const presenceArray = Object.entries(data)
-        .map((entry) => {
-          const [id, value] = entry;
-          return {
-            id,
-            ...(value as RawPresenceData),
-          } as PresenceData;
-        })
-        .filter((node) => node.email === user.email);
-
-    console.log(presenceArray,"Presence Array");
-
-      setPresenceData(presenceArray);
-
-      // Calculate online stats
-      const now = new Date().getTime();
-      const onlineThreshold = 60000; // 60 seconds
-
-      const onlineNodes = presenceArray.filter(
-        (node) => new Date(node.lastSeen).getTime() > now - onlineThreshold
-      );
-
-      setStats((prev) => ({
-        ...prev,
-        activeNodes: onlineNodes.length,
-        workersOnline: onlineNodes.filter((node) => node.type === "worker")
-          .length,
-        clientsOnline: onlineNodes.filter((node) => node.type === "client")
-          .length,
-      }));
-    });
-
-    // Listen to user's tasks
     const tasksRef = ref(database, "tasks");
     const userTasksQuery: Query = query(
       tasksRef,
@@ -160,101 +213,55 @@ const DashboardPage = () => {
       limitToLast(100)
     );
 
-    const tasksUnsubscribe = onValue(userTasksQuery, (snapshot) => {
-      const data = snapshot.val();
-      if (!data) return;
+    const unsubscribePresence = onValue(presenceRef, (snapshot) => {
+      const presenceArray = processPresenceData(snapshot, user.email ?? "");
+      setPresenceData(presenceArray);
 
-      const tasksArray = Object.entries(data)
-        .map((entry) => {
-          const [id, value] = entry;
-          return {
-            id,
-            ...(value as RawTaskData),
-          } as Task;
-        })
-        .filter((task) => task.userId === user.uid)
-        .sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
+      const now = new Date().getTime();
+      const onlineThreshold = 60000;
+      const onlineNodes = presenceArray.filter(
+        (node) => new Date(node.lastSeen).getTime() > now - onlineThreshold
+      );
 
-      const doneTasksArray = Object.entries(data)
-        .map((entry) => {
-          const [id, value] = entry;
-          return {
-            id,
-            ...(value as RawTaskData),
-          } as Task;
-        })
-        .filter((task) => task.doneUserId === user.uid)
-        .sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
+      setStats((prev) => ({
+        ...prev,
+        activeNodes: onlineNodes.length,
+        workersOnline: onlineNodes.filter((node) => node.type === "worker").length,
+        clientsOnline: onlineNodes.filter((node) => node.type === "client").length,
+      }));
+    });
+
+    const unsubscribeTasks = onValue(userTasksQuery, (snapshot) => {
+      const tasksArray = processTasksData(snapshot, user.uid);
+      const doneTasksArray = processTasksData(snapshot, user.uid, true);
 
       setTasks(tasksArray);
-      setDoneTasks(doneTasksArray);
-      console.log(doneTasks);
-      
 
-      // Calculate task stats
       setStats((prev) => ({
         ...prev,
         totalTasks: tasksArray.length,
         completedTasks: tasksArray.filter((task) => task.status === "completed")
           .length,
-        failedTasks: tasksArray.filter((task) => task.status === "failed")
-          .length,
-          doneTotalTasks: doneTasksArray.length,
-          doneCompletedTasks: doneTasksArray.filter((task) => task.status === "completed")
-            .length,
-            doneFailedTasks: doneTasksArray.filter((task) => task.status === "failed")
-            .length,
-        
+        failedTasks: tasksArray.filter((task) => task.status === "failed").length,
+        doneTotalTasks: doneTasksArray.length,
+        doneCompletedTasks: doneTasksArray.filter(
+          (task) => task.status === "completed"
+        ).length,
+        doneFailedTasks: doneTasksArray.filter(
+          (task) => task.status === "failed"
+        ).length,
       }));
     });
 
     return () => {
-      presenceUnsubscribe();
-      tasksUnsubscribe();
+      unsubscribePresence();
+      unsubscribeTasks();
     };
-  }, [user?.uid, user?.email]);
-
-  // Process task data for the chart
-  const chartData: ChartData[] = tasks
-    .reduce((acc: ChartData[], task) => {
-      const date = new Date(task.createdAt).toLocaleDateString();
-      const existing = acc.find((item) => item.date === date);
-      if (existing) {
-        existing.tasks += 1;
-      } else {
-        acc.push({ date, tasks: 1 });
-      }
-      return acc;
-    }, [])
-    .slice(-7);
-
-  const TaskStatus: React.FC<TaskStatusProps> = ({ status }) => {
-    const config = {
-      completed: { icon: CheckCircle, color: "text-green-500" },
-      failed: { icon: XCircle, color: "text-red-500" },
-      running: { icon: Loader, color: "text-blue-500" },
-      pending: { icon: Clock, color: "text-orange-500" },
-    }[status];
-
-    const Icon = config.icon||Clock;
-    return (
-      <Icon
-        className={`h-4 w-4 ${config.color} ${
-          status === "running" ? "animate-spin" : ""
-        }`}
-      />
-    );
-  };
+  }, [user?.uid, user?.email, processPresenceData, processTasksData]);
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-background p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-background p-4 flex items-center justify-center">
         <Card>
           <CardContent className="p-6">
             <p className="text-lg">Please log in to view your dashboard</p>
@@ -265,101 +272,74 @@ const DashboardPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-background">
       {/* Navbar */}
-      <nav className="w-full px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-8">
-          <div className="flex items-center gap-2">
-            <h1 className="font-bold text-xl">DASH</h1>
-          </div>
-          <div className="flex gap-6 text-sm">
-            <a
-              href="https://github.com/Chackoz/Dash-Desktop"
-              className="text-gray-800 hover:text-gray-600"
-            >
-              GitHub
-            </a>
-            <a
-              href="https://github.com/Chackoz/Dash-Desktop/blob/master/README.md"
-              className="text-gray-800 hover:text-gray-600"
-            >
-              Documentation
-            </a>
-          </div>
-        </div>
+      <NavBar/>
+     
 
-        <div className="flex items-center gap-4">
-          <ProfileMenu
-            user={user}
-            logout={logout}
-            onLoginClick={() => setIsLoginOpen(true)}
+      <div className="p-4 md:p-6 space-y-6">
+        {/* Stats Overview */}
+        <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          <StatCard
+            title="Your Active Nodes"
+            value={stats.activeNodes}
+            icon={<Server className="h-4 w-4 text-muted-foreground" />}
+            details={
+              <>
+                <span>{stats.clientsOnline} clients</span>
+                <span>{stats.workersOnline} workers</span>
+              </>
+            }
+          />
+          <StatCard
+            title="Your Tasks"
+            value={stats.totalTasks}
+            icon={<Activity className="h-4 w-4 text-muted-foreground" />}
+            details={
+              <>
+                <span className="text-green-500">
+                  {stats.completedTasks} completed
+                </span>
+                <span className="text-red-500">{stats.failedTasks} failed</span>
+              </>
+            }
+          />
+          <StatCard
+            title="Tasks Done"
+            value={stats.doneTotalTasks}
+            icon={<Activity className="h-4 w-4 text-muted-foreground" />}
+            details={
+              <>
+                <span className="text-green-500">
+                  {stats.doneCompletedTasks} completed
+                </span>
+                <span className="text-red-500">
+                  {stats.doneFailedTasks} failed
+                </span>
+              </>
+            }
           />
         </div>
-      </nav>
 
-      {/* Stats Overview */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
-              Your Active Nodes
-            </CardTitle>
-            <Server className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.activeNodes}</div>
-            <div className="flex gap-2 text-xs text-muted-foreground">
-              <span>{stats.clientsOnline} clients</span>
-              <span>{stats.workersOnline} workers</span>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Your Tasks</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalTasks}</div>
-            <div className="flex gap-2 text-xs text-muted-foreground">
-              <span className="text-green-500">
-                {stats.completedTasks} completed
-              </span>
-              <span className="text-red-500">{stats.failedTasks} failed</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Tasks Done</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.doneTotalTasks}</div>
-            <div className="flex gap-2 text-xs text-muted-foreground">
-              <span className="text-green-500">
-                {stats.doneCompletedTasks} completed
-              </span>
-              <span className="text-red-500">{stats.doneFailedTasks} failed</span>
-            </div>
-          </CardContent>
-        </Card>
-
-       
-
-        <Card className="col-span-3">
+        {/* Chart */}
+        <Card className="w-full">
           <CardHeader>
             <CardTitle className="text-sm font-medium">
               Your Task Activity
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
+          <CardContent className="h-[180px]">
+            <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 12 }}
+                  angle={-45}
+                  textAnchor="end"
+                  height={50}
+                />
+                <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip />
                 <Line
                   type="monotone"
@@ -372,101 +352,104 @@ const DashboardPage = () => {
             </ResponsiveContainer>
           </CardContent>
         </Card>
-        
-        
-      </div>
 
-      <div className="w-full flex gap-4">
-        {/* Recent Tasks */}
-        <Card className="mt-6 w-full">
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">
-              Your Recent Tasks
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-[400px] pr-4">
-              <div className="space-y-2">
-                {tasks.map((task) => (
-                  <div
-                    key={task.id}
-                    className="flex items-center justify-between rounded-lg border p-3"
-                  >
-                    <div className="flex items-center gap-3">
-                      <TaskStatus status={task.status} />
-                      <div>
-                        <div className="font-medium">
-                          {task.taskType === "docker"
-                            ? "Docker Container"
-                            : "Python Script"}
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {new Date(task.createdAt).toLocaleString()}
+        {/* Tasks and Nodes Grid */}
+        <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+          {/* Recent Tasks */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm font-medium">
+                Your Recent Tasks
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[250px] pr-4">
+                <div className="space-y-2">
+                  {tasks.map((task) => (
+                    <div
+                      key={task.id}
+                      className="flex flex-col md:flex-row md:items-center justify-between rounded-lg border p-3 gap-2"
+                    >
+                      <div className="flex items-center gap-3">
+                        <TaskStatus status={task.status} />
+                        <div>
+                          <div className="font-medium">
+                            {task.taskType === "docker"
+                              ? "Docker Container"
+                              : "Python Script"}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {new Date(task.createdAt).toLocaleString()}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="text-sm text-muted-foreground min-w-[250px]">
-                      {task.assignedTo
-                        ? `Worker: ${task.assignedTo}`
-                        : "Unassigned"}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          </CardContent>
-        </Card>
-
-        {/* User's Nodes */}
-        <Card className="mt-6 w-full">
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">
-              Your Network Nodes
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-[300px] pr-4">
-              <div className="space-y-2">
-                {presenceData.map((node) => (
-                  <div
-                    key={node.id}
-                    className="flex items-center justify-between rounded-lg border p-3"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`h-2 w-2 rounded-full ${
-                          new Date(node.lastSeen).getTime() >
-                          new Date().getTime() - 60000
-                            ? "bg-green-500"
-                            : "bg-red-500"
-                        }`}
-                      />
-                      <div>
-                        <div className="font-medium">
-                          {node.email || node.id.slice(0, 8)}
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {node.type} - Last seen:{" "}
-                          {new Date(node.lastSeen).toLocaleTimeString()}
-                        </div>
+                      <div className="text-sm text-muted-foreground">
+                        {task.assignedTo
+                          ? `Worker: ${task.assignedTo}`
+                          : "Unassigned"}
                       </div>
                     </div>
-                    <div className="text-sm text-muted-foreground capitalize">
-                      {node.status}
+                  ))}
+                </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+
+          {/* Network Nodes */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm font-medium">
+                Your Network Nodes
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[250px] pr-4">
+                <div className="space-y-2">
+                  {presenceData.map((node) => (
+                    <div
+                      key={node.id}
+                      className="flex flex-col md:flex-row md:items-center justify-between rounded-lg border p-3 gap-2"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`h-2 w-2 rounded-full ${
+                            new Date(node.lastSeen).getTime() >
+                            new Date().getTime() - 60000
+                              ? "bg-green-500"
+                              : "bg-red-500"
+                          }`}
+                        />
+                        <div>
+                          <div className="font-medium">
+                            {node.email || node.id.slice(0, 8)}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            <span className="capitalize">{node.type}</span> - Last
+                            seen: {new Date(node.lastSeen).toLocaleTimeString()}
+                          </div>
+                          <div className="text-xs text-muted-foreground md:hidden">
+                            Status: <span className="capitalize">{node.status}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="hidden md:block text-sm text-muted-foreground capitalize">
+                        {node.status}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          </CardContent>
-        </Card>
+                  ))}
+                  {presenceData.length === 0 && (
+                    <div className="text-center text-muted-foreground p-4">
+                      No network nodes found
+                    </div>
+                  )}
+                </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-      {isLoginOpen && (
-        <LoginModal
-          isOpen={isLoginOpen}
-          onClose={() => setIsLoginOpen(false)}
-        />
-      )}
+      <Footer />
+     
     </div>
   );
 };
