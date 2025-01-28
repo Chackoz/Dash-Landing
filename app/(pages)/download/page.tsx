@@ -63,7 +63,7 @@ const DownloadPage: React.FC = () => {
       case 'macOS':
         return `${baseUrl}DASH_0.1.0_aarch64.dmg`;
       case 'Linux':
-        return `${baseUrl}DASH-${latestVersion}.AppImage`;
+        return `${baseUrl}DASH_0.1.0_amd64.deb`;
       default:
         return '';
     }
@@ -133,24 +133,9 @@ const DownloadPage: React.FC = () => {
         <div className="space-y-4">
           {selectedOS === 'Linux' ? (
             <div className="space-y-4">
-              <Alert className="text-left">
-                <Terminal className="h-4 w-4" />
-                <AlertDescription>
-                  <div className="mt-2 flex items-center justify-between bg-secondary p-2 rounded">
-                    <code className="md:text-sm max-w-[60vw] flex text-[10px]">{getLinuxInstallCommand()}</code>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleCopyCommand}
-                      className="ml-2"
-                    >
-                      {copySuccess ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                </AlertDescription>
-              </Alert>
+            
               <p className="text-sm text-muted-foreground">
-                Or download the AppImage manually:
+                Or download the deb manually:
               </p>
             </div>
           ) : null}
@@ -174,7 +159,7 @@ const DownloadPage: React.FC = () => {
             {isLoading ? "Checking version..." : `Latest version: ${latestVersion || 'Unknown'}`}
           </p>
           <p className="text-sm text-muted-foreground">
-            Requires {selectedOS === 'Windows' ? 'Windows 10' : selectedOS === 'macOS' ? 'macOS 12' : 'Arch Linux 2023.01.01'} or later
+            Requires {selectedOS === 'Windows' ? 'Windows 10' : selectedOS === 'macOS' ? 'macOS 12' : 'Linux 2023.01.01'} or later
           </p>
         </div>
       </div>
