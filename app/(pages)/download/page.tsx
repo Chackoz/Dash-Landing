@@ -1,9 +1,8 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import { Download, Check, Terminal, Copy } from 'lucide-react';
+import { Download, Check} from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import NavBar from '@/app/components/NavBar';
 
 interface Release {
@@ -20,7 +19,7 @@ const DownloadPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedOS, setSelectedOS] = useState<string>("Windows");
   const [downloadStarted, setDownloadStarted] = useState<boolean>(false);
-  const [copySuccess, setCopySuccess] = useState<boolean>(false);
+
 
   useEffect(() => {
     const fetchLatestVersion = async () => {
@@ -69,9 +68,6 @@ const DownloadPage: React.FC = () => {
     }
   };
 
-  const getLinuxInstallCommand = (): string => {
-    return `curl -fsSL https://raw.githubusercontent.com/Chackoz/Dash-Desktop/main/install.sh | bash`;
-  };
 
   const handleDownload = (): void => {
     const downloadUrl = getDownloadUrl(selectedOS);
@@ -89,15 +85,7 @@ const DownloadPage: React.FC = () => {
     setTimeout(() => setDownloadStarted(false), 3000);
   };
 
-  const handleCopyCommand = async () => {
-    try {
-      await navigator.clipboard.writeText(getLinuxInstallCommand());
-      setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy command:', err);
-    }
-  };
+
 
   const handleOSSelect = (os: string): void => {
     setSelectedOS(os);
