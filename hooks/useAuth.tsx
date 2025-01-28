@@ -1,4 +1,3 @@
-// hooks/useAuth.tsx
 "use client"
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { 
@@ -7,19 +6,33 @@ import {
   onAuthStateChanged,
   User as FirebaseUser
 } from 'firebase/auth';
+import { auth } from '@/lib/firebaseConfig';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
 
 import { User, AuthContextType, AuthResponse } from '../types/auth';
-import { auth } from '@/lib/firebaseConfig';
 
+const COOKIE_NAME = 'auth_session';
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
       if (firebaseUser) {
+        // Get the ID token
+        const token = await firebaseUser.getIdToken();
+        
+        // Set cookie with token
+        Cookies.set(COOKIE_NAME, token, {
+          expires: 7, // 7 days
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax'
+        });
+
         setUser({
           uid: firebaseUser.uid,
           email: firebaseUser.email,
@@ -27,6 +40,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           photoURL: firebaseUser.photoURL,
         });
       } else {
+        // Remove cookie when user is not authenticated
+        Cookies.remove(COOKIE_NAME);
         setUser(null);
       }
       setLoading(false);
@@ -37,7 +52,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string): Promise<AuthResponse> => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const token = await userCredential.user.getIdToken();
+      
+      // Set cookie with token
+      Cookies.set(COOKIE_NAME, token, {
+        expires: 7,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax'
+      });
+
       return { success: true };
     } catch (error) {
       return { 
@@ -50,6 +74,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async (): Promise<AuthResponse> => {
     try {
       await signOut(auth);
+      Cookies.remove(COOKIE_NAME);
+      router.push('/'); // Redirect to home page after logout
       return { success: true };
     } catch (error) {
       return { 

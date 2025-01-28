@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
-import { LoginModal } from '../components/LoginModal';
+import { LoginModal } from '../../components/LoginModal';
 
 // Define TypeScript interfaces
 interface Release {
@@ -110,9 +110,8 @@ const DownloadPage: React.FC = () => {
             <h1>DASH</h1>
           </div>
           <div className="flex gap-6 text-sm">
-            <a href="#" className="text-gray-800 hover:text-gray-600">Discord</a>
-            <a href="#" className="text-gray-800 hover:text-gray-600">GitHub</a>
-            <a href="#" className="text-gray-800 hover:text-gray-600">Models</a>
+          <a href="https://github.com/Chackoz/Dash-Desktop" className="text-gray-800 hover:text-gray-600">GitHub</a>
+          <a href="https://github.com/Chackoz/Dash-Desktop/blob/master/README.md" className="text-gray-800 hover:text-gray-600">Documentation</a>
           </div>
         </div>
 
