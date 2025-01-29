@@ -33,8 +33,6 @@ import { useAuth } from "@/hooks/useAuth";
 import NavBar from "@/app/components/NavBar";
 import Footer from "@/app/components/Footer";
 
-
-
 interface FirebaseDataEntry<T> {
   [key: string]: T;
 }
@@ -102,10 +100,14 @@ const TaskStatus: React.FC<TaskStatusProps> = ({ status }) => {
     pending: { icon: Clock, color: "text-orange-500" },
   }[status];
 
-  const Icon = config.icon || Clock;
+  let Icon=Clock;
+  if (config !== undefined) {
+    Icon = config.icon 
+  } 
+
   return (
     <Icon
-      className={`h-4 w-4 ${config.color} ${
+      className={`h-4 w-4 ${config?.color||"text-blue-100"} ${
         status === "running" ? "animate-spin" : ""
       }`}
     />
@@ -130,11 +132,9 @@ const StatCard: React.FC<{
   </Card>
 );
 
-
-
 // Main Component
 const DashboardPage = () => {
-  const { user} = useAuth();
+  const { user } = useAuth();
   const [presenceData, setPresenceData] = useState<PresenceData[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
 
@@ -150,43 +150,49 @@ const DashboardPage = () => {
     doneFailedTasks: 0,
   });
 
+  const processPresenceData = useCallback(
+    (snapshot: DataSnapshot, userEmail: string): PresenceData[] => {
+      const data = snapshot.val() as FirebaseDataEntry<RawPresenceData> | null;
+      if (!data) return [];
 
-  const processPresenceData = useCallback((
-    snapshot: DataSnapshot,
-    userEmail: string
-  ): PresenceData[] => {
-    const data = snapshot.val() as FirebaseDataEntry<RawPresenceData> | null;
-    if (!data) return [];
-    
-    return Object.entries(data)
-      .map(([id, value]): PresenceData => ({
-        id,
-        ...value,
-      }))
-      .filter((node) => node.email === userEmail);
-  }, []);
+      return Object.entries(data)
+        .map(
+          ([id, value]): PresenceData => ({
+            id,
+            ...value,
+          })
+        )
+        .filter((node) => node.email === userEmail);
+    },
+    []
+  );
 
-  const processTasksData = useCallback((
-    snapshot: DataSnapshot,
-    userId: string,
-    isDone: boolean = false
-  ): Task[] => {
-    const data = snapshot.val() as FirebaseDataEntry<RawTaskData> | null;
-    if (!data) return [];
+  const processTasksData = useCallback(
+    (
+      snapshot: DataSnapshot,
+      userId: string,
+      isDone: boolean = false
+    ): Task[] => {
+      const data = snapshot.val() as FirebaseDataEntry<RawTaskData> | null;
+      if (!data) return [];
 
-    return Object.entries(data)
-      .map(([id, value]): Task => ({
-        id,
-        ...value,
-      }))
-      .filter((task) =>
-        isDone ? task.doneUserId === userId : task.userId === userId
-      )
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-  }, []);
+      return Object.entries(data)
+        .map(
+          ([id, value]): Task => ({
+            id,
+            ...value,
+          })
+        )
+        .filter((task) =>
+          isDone ? task.doneUserId === userId : task.userId === userId
+        )
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+    },
+    []
+  );
 
   const chartData = useMemo(() => {
     return tasks
@@ -226,8 +232,10 @@ const DashboardPage = () => {
       setStats((prev) => ({
         ...prev,
         activeNodes: onlineNodes.length,
-        workersOnline: onlineNodes.filter((node) => node.type === "worker").length,
-        clientsOnline: onlineNodes.filter((node) => node.type === "client").length,
+        workersOnline: onlineNodes.filter((node) => node.type === "worker")
+          .length,
+        clientsOnline: onlineNodes.filter((node) => node.type === "client")
+          .length,
       }));
     });
 
@@ -242,7 +250,8 @@ const DashboardPage = () => {
         totalTasks: tasksArray.length,
         completedTasks: tasksArray.filter((task) => task.status === "completed")
           .length,
-        failedTasks: tasksArray.filter((task) => task.status === "failed").length,
+        failedTasks: tasksArray.filter((task) => task.status === "failed")
+          .length,
         doneTotalTasks: doneTasksArray.length,
         doneCompletedTasks: doneTasksArray.filter(
           (task) => task.status === "completed"
@@ -274,8 +283,7 @@ const DashboardPage = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Navbar */}
-      <NavBar/>
-     
+      <NavBar />
 
       <div className="p-4 md:p-6 space-y-6">
         {/* Stats Overview */}
@@ -301,7 +309,10 @@ const DashboardPage = () => {
                   {stats.completedTasks} completed
                 </span>
                 <span className="text-red-500">{stats.failedTasks} failed</span>
-                <span className="text-blue-500">{stats.totalTasks-stats.completedTasks-stats.failedTasks} pending</span>
+                <span className="text-blue-500">
+                  {stats.totalTasks - stats.completedTasks - stats.failedTasks}{" "}
+                  pending
+                </span>
               </>
             }
           />
@@ -317,7 +328,12 @@ const DashboardPage = () => {
                 <span className="text-red-500">
                   {stats.doneFailedTasks} failed
                 </span>
-                <span className="text-blue-500">{stats.doneTotalTasks-stats.doneCompletedTasks-stats.doneFailedTasks} pending</span>
+                <span className="text-blue-500">
+                  {stats.doneTotalTasks -
+                    stats.doneCompletedTasks -
+                    stats.doneFailedTasks}{" "}
+                  pending
+                </span>
               </>
             }
           />
@@ -426,11 +442,12 @@ const DashboardPage = () => {
                             {node.email || node.id.slice(0, 8)}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            <span className="capitalize">{node.type}</span> {node.id}
-                            
+                            <span className="capitalize">{node.type}</span>{" "}
+                            {node.id}
                           </div>
                           <div className="text-xs text-muted-foreground md:hidden">
-                            Status: <span className="capitalize">{node.status}</span>
+                            Status:{" "}
+                            <span className="capitalize">{node.status}</span>
                           </div>
                         </div>
                       </div>
@@ -451,7 +468,6 @@ const DashboardPage = () => {
         </div>
       </div>
       <Footer />
-     
     </div>
   );
 };

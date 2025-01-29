@@ -10,6 +10,7 @@ import {
 import { Menu } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { LoginModal } from './LoginModal';
+import Link from 'next/link';
 
 
 const MobileNav = () => (
@@ -43,7 +44,7 @@ function NavBar() {
     <nav className="sticky top-0 z-50 w-full px-4 md:px-6 py-4 flex justify-between items-center bg-background border-b">
     <div className="flex items-center gap-4 md:gap-8">
       <div className="flex items-center gap-2">
-        <h1 className="font-bold text-xl">DASH</h1>
+        <Link href="/" className="font-bold text-xl">DASH</Link>
       </div>
       <div className="gap-6 text-sm hidden md:flex">
         <a
