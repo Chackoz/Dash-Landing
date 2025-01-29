@@ -301,6 +301,7 @@ const DashboardPage = () => {
                   {stats.completedTasks} completed
                 </span>
                 <span className="text-red-500">{stats.failedTasks} failed</span>
+                <span className="text-blue-500">{stats.totalTasks-stats.completedTasks-stats.failedTasks} pending</span>
               </>
             }
           />
@@ -316,6 +317,7 @@ const DashboardPage = () => {
                 <span className="text-red-500">
                   {stats.doneFailedTasks} failed
                 </span>
+                <span className="text-blue-500">{stats.doneTotalTasks-stats.doneCompletedTasks-stats.doneFailedTasks} pending</span>
               </>
             }
           />
@@ -354,7 +356,7 @@ const DashboardPage = () => {
         </Card>
 
         {/* Tasks and Nodes Grid */}
-        <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+        <div className="grid gap-6 grid-cols-1 lg:grid-cols-2 h-[35vh]">
           {/* Recent Tasks */}
           <Card>
             <CardHeader>
@@ -363,7 +365,7 @@ const DashboardPage = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ScrollArea className="h-[250px] pr-4">
+              <ScrollArea className="h-[20vh] pr-4">
                 <div className="space-y-2">
                   {tasks.map((task) => (
                     <div
@@ -399,11 +401,11 @@ const DashboardPage = () => {
           <Card>
             <CardHeader>
               <CardTitle className="text-sm font-medium">
-                Your Network Nodes
+                Your Active Network Nodes
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ScrollArea className="h-[250px] pr-4">
+              <ScrollArea className=" pr-4">
                 <div className="space-y-2">
                   {presenceData.map((node) => (
                     <div
@@ -424,8 +426,8 @@ const DashboardPage = () => {
                             {node.email || node.id.slice(0, 8)}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            <span className="capitalize">{node.type}</span> - Last
-                            seen: {new Date(node.lastSeen).toLocaleTimeString()}
+                            <span className="capitalize">{node.type}</span> {node.id}
+                            
                           </div>
                           <div className="text-xs text-muted-foreground md:hidden">
                             Status: <span className="capitalize">{node.status}</span>

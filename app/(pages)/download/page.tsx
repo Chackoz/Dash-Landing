@@ -122,9 +122,7 @@ const DownloadPage: React.FC = () => {
           {selectedOS === 'Linux' ? (
             <div className="space-y-4">
             
-              <p className="text-sm text-muted-foreground">
-                Or download the deb manually:
-              </p>
+
             </div>
           ) : null}
 
