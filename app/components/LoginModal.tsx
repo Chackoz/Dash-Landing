@@ -69,6 +69,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
             >
               Login
             </button>
+            <a href="/reset-password" className="text-sm text-accent text-center block text-black">
+              Forgot password?
+            </a>
           </form>
         </div>
       </div>
