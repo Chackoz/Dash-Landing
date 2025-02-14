@@ -291,7 +291,7 @@ const ResetPasswordPage = () => {
 
         <div className="mt-6 text-center">
           <Link
-            href="/login"
+            href="/"
             className="text-sm text-gray-600 hover:text-black transition"
           >
             Back to Sign In

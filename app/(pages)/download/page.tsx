@@ -20,7 +20,6 @@ const DownloadPage: React.FC = () => {
   const [selectedOS, setSelectedOS] = useState<string>("Windows");
   const [downloadStarted, setDownloadStarted] = useState<boolean>(false);
 
-
   useEffect(() => {
     const fetchLatestVersion = async () => {
       try {
@@ -54,20 +53,21 @@ const DownloadPage: React.FC = () => {
 
   const getDownloadUrl = (os: string): string => {
     if (!latestVersion) return '';
+    const version = latestVersion.replace('v', ''); // Remove 'v' prefix if present
     const baseUrl = `https://github.com/Chackoz/Dash-Desktop/releases/download/${latestVersion}/`;
     
     switch (os) {
       case 'Windows':
-        return `${baseUrl}DASH_0.1.0_x64_en-US.msi`;
+        return `${baseUrl}DASH_${version}_x64_en-US.msi`;
       case 'macOS':
-        return `${baseUrl}DASH_0.1.0_aarch64.dmg`;
+        return `${baseUrl}DASH_${version}_aarch64.dmg`;
       case 'Linux':
-        return `${baseUrl}DASH_0.1.0_amd64.deb`;
+        // You might want to add support for different Linux package formats
+        return `${baseUrl}DASH_${version}_amd64.deb`;
       default:
         return '';
     }
   };
-
 
   const handleDownload = (): void => {
     const downloadUrl = getDownloadUrl(selectedOS);
@@ -84,8 +84,6 @@ const DownloadPage: React.FC = () => {
 
     setTimeout(() => setDownloadStarted(false), 3000);
   };
-
-
 
   const handleOSSelect = (os: string): void => {
     setSelectedOS(os);
@@ -119,13 +117,6 @@ const DownloadPage: React.FC = () => {
         </div>
 
         <div className="space-y-4">
-          {selectedOS === 'Linux' ? (
-            <div className="space-y-4">
-            
-
-            </div>
-          ) : null}
-
           <Button 
             size="lg" 
             className="w-full max-w-md"

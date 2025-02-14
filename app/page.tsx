@@ -36,10 +36,12 @@ const DashLandingPage: React.FC = () => {
           >
             Download <span className="text-lg -mt-[2]">↓</span>
           </Link>
-          {/* <button className="border border-gray-200 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition flex items-center gap-2">
-            <Github className="h-5 w-5" />
-            View on GitHub
-          </button> */}
+          {/* <Link
+            href="/docs"
+            className="border border-gray-200 px-6 py-3 rounded-full font-medium hover:bg-gray-50 transition flex items-center gap-2"
+          >
+            View Documentation
+          </Link> */}
           <h2 className="text-sm text-gray-500 md:max-w-[70%] text-center ">
             Available for macOS, Linux, and Windows
           </h2>

@@ -27,10 +27,16 @@ const MobileNav = () => (
           GitHub
         </a>
         <a
-          href="https://github.com/Chackoz/Dash-Desktop/blob/master/README.md"
+          href="/docs"
           className="text-gray-800 hover:text-gray-600"
         >
           Documentation
+        </a>
+        <a
+          href="/download"
+          className="text-gray-800 hover:text-gray-600"
+        >
+          Download
         </a>
       </div>
     </SheetContent>
@@ -53,11 +59,17 @@ function NavBar() {
         >
           GitHub
         </a>
-        <a
-          href="https://github.com/Chackoz/Dash-Desktop/blob/master/README.md"
+        {/* <a
+          href="/docs"
           className="text-gray-800 hover:text-gray-600"
         >
           Documentation
+        </a> */}
+        <a
+          href="/download"
+          className="text-gray-800 hover:text-gray-600"
+        >
+          Download
         </a>
       </div>
     </div>
