@@ -1,27 +1,23 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-"use client"
+"use client";
 import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Download,
-  Shield,
   Activity,
   Container,
   CheckCircle,
   Globe,
-  Cloud,
   Terminal,
   BookOpen,
   Code,
   Server,
   Network,
-  Clock,
   DownloadIcon,
-  Archive,
+  Database,
+  Cpu,
 } from "lucide-react";
 import NavBar from "@/app/components/NavBar";
-import Footer from "@/app/components/Footer";
 
 type SectionContent = {
   title: string;
@@ -36,12 +32,11 @@ type SidebarContent = {
 type SectionName =
   | "overview"
   | "installation"
-  | "architecture"
+  | "task-execution"
   | "p2p-network"
   | "task-scheduler"
   | "docker-integration"
-  | "security"
-
+  | "security";
 
 const DashDocumentation = () => {
   const [activeSection, setActiveSection] = useState<SectionName>("overview");
@@ -54,45 +49,45 @@ const DashDocumentation = () => {
       content: (
         <>
           <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-4 text-gray-900">DASH Documentation</h1>
-            <p className="text-gray-600 text-lg leading-relaxed">
-              A powerful decentralized desktop application for distributed task execution
-              and Docker container orchestration across peer-to-peer networks
+            <h1 className="text-4xl font-bold mb-4 text-slate-800">
+              DASH Documentation
+            </h1>
+            <p className="text-slate-600 text-lg leading-relaxed">
+              A distributed code execution system enabling efficient task
+              distribution and execution across multiple nodes, built with
+              Next.js, Tauri, and Firebase.
             </p>
           </div>
 
-          <Alert className="mb-8 bg-blue-50 border-blue-200">
+          <Alert className="mb-8 bg-blue-50 border border-blue-100">
             <Activity className="h-4 w-4 text-blue-500" />
             <AlertDescription className="text-blue-700">
-              Latest Version: v1.9.3 Beta - Now with enhanced Docker support and
-              improved task scheduling
+              Latest Version: v1.9.4 - Now with enhanced Firebase integration
+              and real-time monitoring
             </AlertDescription>
           </Alert>
 
-          <Card className="bg-white border-gray-200 mb-8 hover:shadow-lg transition-shadow">
+          <Card className="mb-8 border border-slate-200">
             <CardHeader>
               <CardTitle className="text-2xl">What is DASH?</CardTitle>
             </CardHeader>
-            <CardContent className="text-gray-600 space-y-4">
+            <CardContent className="text-slate-600 space-y-4">
               <p className="leading-relaxed">
-                DASH is a revolutionary desktop application built with Tauri and Next.js that
-                enables distributed task execution across a peer-to-peer network. Unlike 
-                traditional client-server architectures, DASH operates in a completely 
-                decentralized manner, where each node in the network can both distribute 
-                and execute tasks.
+                DASH is a powerful distributed code execution system that
+                enables efficient task execution across multiple nodes. Built
+                with Next.js and Tauri, it provides a desktop client interface
+                while leveraging Firebase for task management and coordination.
               </p>
               <p className="leading-relaxed">
-                With native Docker support, DASH allows you to distribute Docker containers 
-                as tasks across the network, enabling complex workload distribution while 
-                maintaining isolation and reproducibility. The system includes a built-in 
-                scheduler that oversees task distribution and assignment across all 
-                connected peers.
+                With native Docker support, DASH allows for consistent execution
+                environments across nodes, while its Python-based scheduler
+                ensures optimal task distribution based on available resources.
               </p>
             </CardContent>
           </Card>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
+            <Card className="border border-slate-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-green-500" />
@@ -102,49 +97,51 @@ const DashDocumentation = () => {
               <CardContent>
                 <ul className="space-y-4">
                   <li className="flex items-center gap-3">
-                    <Globe className="h-5 w-5 text-blue-500" />
-                    <span className="leading-relaxed">True peer-to-peer distributed task execution</span>
+                    <Server className="h-5 w-5 text-blue-500" />
+                    <span>Distributed task execution across nodes</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <Container className="h-5 w-5 text-blue-500" />
-                    <span className="leading-relaxed">Native Docker container distribution and execution</span>
+                    <span>
+                      Docker container support for consistent environments
+                    </span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <Cloud className="h-5 w-5 text-blue-500" />
-                    <span className="leading-relaxed">Serverless architecture with decentralized scheduling</span>
+                    <Database className="h-5 w-5 text-blue-500" />
+                    <span>Firebase-powered task management</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <Shield className="h-5 w-5 text-blue-500" />
-                    <span className="leading-relaxed">End-to-end encrypted peer-to-peer communication</span>
+                    <Activity className="h-5 w-5 text-blue-500" />
+                    <span>Real-time monitoring and updates</span>
                   </li>
                 </ul>
               </CardContent>
             </Card>
 
-            <Card className="bg-white border-gray-200 hover:shadow-lg transition-shadow">
+            <Card className="border border-slate-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-green-500" />
-                  Quick Stats
+                  <Cpu className="h-5 w-5 text-green-500" />
+                  System Components
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-4">
-                  <li className="flex justify-between items-center">
-                    <span className="text-gray-600">Active Users</span>
-                    <span className="font-semibold text-blue-600">10,000+</span>
+                  <li className="flex items-center gap-3">
+                    <Globe className="h-5 w-5 text-blue-500" />
+                    <span>Next.js + Tauri Desktop Client</span>
                   </li>
-                  <li className="flex justify-between items-center">
-                    <span className="text-gray-600">Tasks Processed</span>
-                    <span className="font-semibold text-blue-600">1M+</span>
+                  <li className="flex items-center gap-3">
+                    <Code className="h-5 w-5 text-blue-500" />
+                    <span>Python-based Task Scheduler</span>
                   </li>
-                  <li className="flex justify-between items-center">
-                    <span className="text-gray-600">Network Nodes</span>
-                    <span className="font-semibold text-blue-600">5,000+</span>
+                  <li className="flex items-center gap-3">
+                    <Database className="h-5 w-5 text-blue-500" />
+                    <span>Firebase Task Management</span>
                   </li>
-                  <li className="flex justify-between items-center">
-                    <span className="text-gray-600">Uptime</span>
-                    <span className="font-semibold text-blue-600">99.9%</span>
+                  <li className="flex items-center gap-3">
+                    <Container className="h-5 w-5 text-blue-500" />
+                    <span>Docker Execution Environment</span>
                   </li>
                 </ul>
               </CardContent>
@@ -153,146 +150,78 @@ const DashDocumentation = () => {
         </>
       ),
     },
-    "p2p-network": {
-      title: "P2P Network",
-      icon: <Network className="h-4 w-4" />,
+    "task-execution": {
+      title: "Task Execution",
+      icon: <Terminal className="h-4 w-4" />,
       content: (
-        <Card className="bg-white border-gray-200">
+        <Card className="border border-slate-200">
           <CardHeader>
-            <CardTitle>P2P Network Architecture</CardTitle>
+            <CardTitle>Task Execution Flow</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
-              <h3 className="text-xl font-semibold mb-4">Network Overview</h3>
-              <p className="text-gray-600 leading-relaxed mb-4">
-                DASH implements a fully decentralized peer-to-peer network architecture
-                where each node acts as both a client and server. This enables robust,
-                scalable distributed computing without single points of failure.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <h4 className="font-medium text-lg">Node Types</h4>
-                <ul className="list-disc pl-5 space-y-2 text-gray-600">
-                  <li>Worker Nodes - Execute distributed tasks</li>
-                  <li>Scheduler Nodes - Coordinate task distribution</li>
-                  <li>Gateway Nodes - Handle network discovery</li>
-                  <li>Storage Nodes - Manage distributed data</li>
-                </ul>
-              </div>
-
-              <div className="space-y-4">
-                <h4 className="font-medium text-lg">Network Features</h4>
-                <ul className="list-disc pl-5 space-y-2 text-gray-600">
-                  <li>Automatic peer discovery and routing</li>
-                  <li>NAT traversal and hole punching</li>
-                  <li>End-to-end encrypted communication</li>
-                  <li>Automatic network partitioning handling</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <h3 className="text-xl font-semibold mb-4">Network Configuration</h3>
-              <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
-{`# Example network configuration
-network:
-  discovery:
-    bootstrap_nodes:
-      - /ip4/1.2.3.4/tcp/4001/p2p/QmYyQSo1c1Ym7orWxLYvCrM2EmxFTANf8wXmmE7DWjhx5N
-    mdns:
-      enabled: true
-      interval: 10
-  
-  security:
-    transport_sec: true
-    peer_id_privacy: true`}
-              </pre>
-            </div>
-          </CardContent>
-        </Card>
-      ),
-    },
-    "task-scheduler": {
-      title: "Task Scheduler",
-      icon: <Clock className="h-4 w-4" />,
-      content: (
-        <Card className="bg-white border-gray-200">
-          <CardHeader>
-            <CardTitle>Distributed Task Scheduler</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Scheduler Architecture</h3>
-              <p className="text-gray-600 leading-relaxed">
-                The DASH task scheduler implements a distributed algorithm for efficiently
-                assigning and managing tasks across the P2P network. It handles task
-                prioritization, load balancing, and fault tolerance automatically.
+              <h3 className="text-xl font-semibold mb-4">Execution Process</h3>
+              <p className="text-slate-600 leading-relaxed">
+                DASH implements a sophisticated task execution flow that
+                leverages Firebase for coordination and Docker for isolation.
+                Tasks can be executed locally or distributed across the network
+                based on resource availability.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h4 className="font-medium text-lg mb-4">Scheduling Features</h4>
-                <ul className="space-y-3 text-gray-600">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    Dynamic load balancing
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    Priority-based scheduling
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    Resource-aware task distribution
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    Automatic failure recovery
-                  </li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-medium text-lg mb-4">Task Types</h4>
-                <ul className="space-y-3 text-gray-600">
-                  <li className="flex items-center gap-2">
-                    <Container className="h-4 w-4 text-blue-500" />
-                    Docker container tasks
-                  </li>
+                <h4 className="font-medium text-lg mb-4">Task Submission</h4>
+                <ul className="space-y-3 text-slate-600">
                   <li className="flex items-center gap-2">
                     <Code className="h-4 w-4 text-blue-500" />
-                    Code execution tasks
+                    Code snippet submission
                   </li>
                   <li className="flex items-center gap-2">
-                    <Terminal className="h-4 w-4 text-blue-500" />
-                    Shell command tasks
+                    <Container className="h-4 w-4 text-blue-500" />
+                    Docker-based execution
                   </li>
+                  <li className="flex items-center gap-2">
+                    <Database className="h-4 w-4 text-blue-500" />
+                    Firebase task queueing
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-medium text-lg mb-4">Execution Options</h4>
+                <ul className="space-y-3 text-slate-600">
                   <li className="flex items-center gap-2">
                     <Server className="h-4 w-4 text-blue-500" />
-                    Data processing tasks
+                    Local execution
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Network className="h-4 w-4 text-blue-500" />
+                    Network distribution
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Activity className="h-4 w-4 text-blue-500" />
+                    Real-time monitoring
                   </li>
                 </ul>
               </div>
             </div>
 
             <div className="mt-6">
-              <h4 className="font-medium text-lg mb-4">Example Task Definition</h4>
-              <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
-{`{
-  "task_id": "process-data-001",
+              <h4 className="font-medium text-lg mb-4">
+                Example Task Configuration
+              </h4>
+              <pre className="bg-slate-100 p-4 rounded-lg overflow-x-auto text-sm">
+                {`{
+  "taskId": "task-001",
   "type": "docker",
-  "image": "data-processor:latest",
-  "priority": "high",
-  "resources": {
+  "code": "print('Hello, World!')",
+  "userId": "user123",
+  "status": "pending",
+  "requirements": {
     "cpu": "2",
-    "memory": "4Gi"
-  },
-  "retry_policy": {
-    "max_attempts": 3,
-    "backoff": "exponential"
+    "memory": "4G",
+    "gpu": false
   }
 }`}
               </pre>
@@ -305,33 +234,35 @@ network:
       title: "Installation",
       icon: <DownloadIcon className="h-4 w-4" />,
       content: (
-        <Card className="bg-white border-gray-200">
+        <Card className="border border-slate-200">
           <CardHeader>
             <CardTitle>Installation Guide</CardTitle>
           </CardHeader>
 
-          <CardContent className="text-gray-600">
+          <CardContent className="text-slate-600">
             <div className="space-y-4">
-              <p className="text-gray-600">
+              <p className="text-slate-600">
                 Download DASH for your preferred platform from our download
                 page.
               </p>
               <div className="flex justify-center">
                 <a
                   href="/download"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-[#3d3d3d] text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-slate-800 text-white rounded-lg hover:bg-blue-600 transition-colors"
                 >
                   <Download className="h-5 w-5" />
                   Download DASH
                 </a>
               </div>
-              <div className="mt-4 text-sm text-gray-500 text-center">
+              <div className="mt-4 text-sm text-slate-500 text-center">
                 Available for Windows, Linux, and macOS
               </div>
             </div>
             <div className="space-y-6">
               <div>
-                <h3 className="font-medium text-black mb-2">Prerequisites</h3>
+                <h3 className="font-medium text-slate-800 mb-2">
+                  Prerequisites
+                </h3>
                 <ul className="list-disc pl-5 space-y-2">
                   <li>
                     Docker Desktop installed and running (required for container
@@ -343,7 +274,7 @@ network:
               </div>
 
               <div>
-                <h3 className="font-medium text-black mb-2">
+                <h3 className="font-medium text-slate-800 mb-2">
                   Installation Steps
                 </h3>
                 <ol className="list-decimal pl-5 space-y-2">
@@ -357,10 +288,10 @@ network:
               </div>
 
               <div>
-                <h3 className="font-medium text-black mb-2">
+                <h3 className="font-medium text-slate-800 mb-2">
                   Verifying Installation
                 </h3>
-                <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                <pre className="bg-slate-100 p-4 rounded-lg overflow-x-auto text-sm">
                   {`# Check Docker installation
 docker --version
 
@@ -373,74 +304,26 @@ docker --version
         </Card>
       ),
     },
-    architecture: {
-      title: "Architecture",
-      icon: <Archive className="h-4 w-4" />,
-      content: (
-        <Card className="bg-white border-gray-200">
-          <CardHeader>
-            <CardTitle>Technical Architecture</CardTitle>
-          </CardHeader>
-          <CardContent className="text-gray-600">
-            <div className="space-y-6">
-              <div>
-                <h3 className="font-medium text-black mb-2">
-                  Desktop Application
-                </h3>
-                <ul className="list-disc pl-5 space-y-2">
-                  <li>Built with Tauri and Next.js for native performance</li>
-                  <li>Cross-platform support (Windows, Linux, macOS)</li>
-                  <li>Integrated Docker support for container execution</li>
-                  <li>Local task execution capabilities</li>
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="font-medium text-black mb-2">P2P Network</h3>
-                <ul className="list-disc pl-5 space-y-2">
-                  <li>Decentralized peer-to-peer architecture</li>
-                  <li>No central server requirement</li>
-                  <li>Built-in task scheduler for workload distribution</li>
-                  <li>Automatic peer discovery and connection</li>
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="font-medium text-black mb-2">
-                  Task Distribution
-                </h3>
-                <ul className="list-disc pl-5 space-y-2">
-                  <li>Support for code execution and Docker containers</li>
-                  <li>Intelligent task scheduling across network nodes</li>
-                  <li>Real-time task monitoring and status updates</li>
-                  <li>Fault tolerance and task redistribution</li>
-                </ul>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ),
-    },
-
     "docker-integration": {
       title: "Docker Integration",
       icon: <Container className="h-4 w-4" />,
       content: (
-        <Card className="bg-white border-gray-200">
+        <Card className="border border-slate-200">
           <CardHeader>
             <CardTitle>Docker Container Management</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <p className="text-gray-600 leading-relaxed">
-              DASH provides seamless integration with Docker, allowing you to distribute
-              and manage containers across your P2P network. This enables consistent,
-              isolated execution environments for your distributed tasks.
+            <p className="text-slate-600 leading-relaxed">
+              DASH provides seamless integration with Docker, allowing you to
+              distribute and manage containers across your P2P network. This
+              enables consistent, isolated execution environments for your
+              distributed tasks.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <h4 className="font-medium text-lg mb-4">Container Features</h4>
-                <ul className="list-disc pl-5 space-y-2 text-gray-600">
+                <ul className="list-disc pl-5 space-y-2 text-slate-600">
                   <li>Automatic container distribution</li>
                   <li>Version management and rollback</li>
                   <li>Resource isolation and limits</li>
@@ -450,7 +333,7 @@ docker --version
 
               <div>
                 <h4 className="font-medium text-lg mb-4">Security Features</h4>
-                <ul className="list-disc pl-5 space-y-2 text-gray-600">
+                <ul className="list-disc pl-5 space-y-2 text-slate-600">
                   <li>Container image verification</li>
                   <li>Resource access controls</li>
                   <li>Network isolation</li>
@@ -460,9 +343,11 @@ docker --version
             </div>
 
             <div className="mt-6">
-              <h4 className="font-medium text-lg mb-4">Example Configuration</h4>
-              <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
-{`version: '3'
+              <h4 className="font-medium text-lg mb-4">
+                Example Configuration
+              </h4>
+              <pre className="bg-slate-100 p-4 rounded-lg overflow-x-auto text-sm">
+                {`version: '3'
 services:
   task:
     image: my-task:latest
@@ -481,35 +366,53 @@ services:
         </Card>
       ),
     },
-    // ... [Continue with other sections] ...
   };
 
   const sections = {
     "Getting Started": ["overview", "installation"],
-    "Core Concepts": ["architecture", "p2p-network", "task-scheduler"],
-    "Features": ["docker-integration"],
-    
+    "Core Concepts": ["task-execution", "p2p-network", "task-scheduler"],
+    Features: ["docker-integration"],
   };
 
+  // Helper functions for navigation
+  function getAllSections() {
+    return Object.values(sections).flat() as SectionName[];
+  }
+
+  function getPreviousSection(currentSection: SectionName) {
+    const allSections = getAllSections();
+    const currentIndex = allSections.indexOf(currentSection);
+    return currentIndex > 0 ? allSections[currentIndex - 1] : null;
+  }
+
+  function getNextSection(currentSection: SectionName) {
+    const allSections = getAllSections();
+    const currentIndex = allSections.indexOf(currentSection);
+    return currentIndex < allSections.length - 1
+      ? allSections[currentIndex + 1]
+      : null;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col p-4">
+      {/* Header */}
       <NavBar />
 
-      <div className="flex flex-1">
+      <div className="flex flex-1 bg-[#f0efea] h-[80vh] rounded-xl">
         {/* Sidebar */}
-        <div className="w-72 bg-white border-r border-gray-200 hidden lg:block overflow-y-auto">
-          <div className="p-6 space-y-8">
+        <div className="w-64 bg-[#f7f7f7] border-r border-slate-200 hidden lg:block overflow-y-auto">
+          <div className="p-4 space-y-6">
             {/* Search bar */}
             <div className="relative">
               <input
                 type="text"
                 placeholder="Search documentation..."
-                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 rounded-md border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               <svg
-                className="absolute right-3 top-2.5 h-5 w-5 text-gray-400"
+                className="absolute right-3 top-2.5 h-4 w-4 text-slate-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -526,28 +429,23 @@ services:
             {/* Navigation sections */}
             {Object.entries(sections).map(([category, sectionNames]) => (
               <div key={category}>
-                <div className="text-gray-500 font-medium mb-3 text-sm uppercase tracking-wider">
+                <div className="text-slate-400 font-medium mb-2 text-xs uppercase tracking-wider">
                   {category}
                 </div>
-                <ul className="space-y-2">
+                <ul className="space-y-1">
                   {sectionNames.map((section) => (
                     <li
                       key={section}
-                      className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-colors ${
+                      className={`flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors ${
                         activeSection === section
                           ? "bg-blue-50 text-blue-600 font-medium"
-                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                       }`}
                       onClick={() => setActiveSection(section as SectionName)}
                     >
                       {sidebarContent[section]?.icon}
-                      <span>
-                        {section
-                          .split("-")
-                          .map(
-                            (word) => word.charAt(0).toUpperCase() + word.slice(1)
-                          )
-                          .join(" ")}
+                      <span className="text-sm">
+                        {sidebarContent[section]?.title}
                       </span>
                     </li>
                   ))}
@@ -558,34 +456,33 @@ services:
         </div>
 
         {/* Main content */}
-        <main className="flex-1 overflow-y-auto bg-white">
+        <main className="flex-1 overflow-y-auto">
           {/* Mobile breadcrumb */}
-          <div className="lg:hidden bg-white border-b border-gray-200 px-4 py-3">
+          <div className="lg:hidden bg-white border-b border-slate-200 px-4 py-3">
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-gray-500">
-                {Object.entries(sections).find(([_, sectionNames]) =>
-                  sectionNames.includes(activeSection)
-                
-                )?.[0]}
+              <span className="text-slate-500">
+                {
+                  Object.entries(sections).find(([, sectionNames]) =>
+                   
+                    sectionNames.includes(activeSection)
+                  )?.[0]
+                }
               </span>
-              <span className="text-gray-500">/</span>
-              <span className="text-gray-900 font-medium">
-                {activeSection
-                  .split("-")
-                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                  .join(" ")}
+              <span className="text-slate-500">/</span>
+              <span className="text-slate-900 font-medium">
+                {sidebarContent[activeSection]?.title}
               </span>
             </div>
           </div>
 
           {/* Content */}
-          <div className="max-w-4xl mx-auto p-8">
+          <div className="max-w-4xl mx-auto p-6 lg:p-8">
             <div className="relative">
               {/* Section content */}
               {sidebarContent[activeSection]?.content}
 
               {/* Navigation footer */}
-              <div className="mt-12 border-t border-gray-200 pt-8">
+              <div className="mt-12 border-t border-slate-200 pt-8">
                 <div className="flex justify-between items-center">
                   {/* Previous section */}
                   {getPreviousSection(activeSection) && (
@@ -643,28 +540,16 @@ services:
         </main>
       </div>
 
-      <Footer />
+      {/* Footer */}
+      <footer className="bg-white border-t border-slate-200 py-6">
+        <div className="container mx-auto px-4">
+          <div className="text-center text-slate-500 text-sm">
+            © 2025 DASH. All rights reserved.
+          </div>
+        </div>
+      </footer>
     </div>
   );
-
-  // Helper functions for navigation
-  function getAllSections() {
-    return Object.values(sections).flat() as SectionName[];
-  }
-
-  function getPreviousSection(currentSection: SectionName) {
-    const allSections = getAllSections();
-    const currentIndex = allSections.indexOf(currentSection);
-    return currentIndex > 0 ? allSections[currentIndex - 1] : null;
-  }
-
-  function getNextSection(currentSection: SectionName) {
-    const allSections = getAllSections();
-    const currentIndex = allSections.indexOf(currentSection);
-    return currentIndex < allSections.length - 1
-      ? allSections[currentIndex + 1]
-      : null;
-  }
 };
 
 export default DashDocumentation;

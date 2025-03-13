@@ -281,7 +281,7 @@ const DashboardPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background p-4">
       {/* Navbar */}
       <NavBar />
 

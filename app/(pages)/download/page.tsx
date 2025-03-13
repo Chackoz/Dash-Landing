@@ -4,6 +4,7 @@ import { Download, Check} from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import NavBar from '@/app/components/NavBar';
+import Footer from '@/app/components/Footer';
 
 interface Release {
   tag_name: string;
@@ -99,7 +100,7 @@ const DownloadPage: React.FC = () => {
     <div className="min-h-screen bg-background flex flex-col items-center justify-between w-full p-4">
       <NavBar/>
       
-      <div className="md:max-w-3xl w-full space-y-4 md:space-y-8 text-center flex justify-center items-center flex-col">
+      <div className=" w-full space-y-4 md:space-y-8 text-center flex justify-center items-center flex-col bg-[#f0efea] h-[80vh] rounded-xl">
         <h1 className="text-4xl font-bold mb-2">Download DASH</h1>
         
         <div className="grid grid-cols-3 gap-4 md:max-w-md mx-auto mb-8">
@@ -141,7 +142,7 @@ const DownloadPage: React.FC = () => {
         </div>
       </div>
 
-      <div></div>
+      <Footer/>
     </div>
   );
 };

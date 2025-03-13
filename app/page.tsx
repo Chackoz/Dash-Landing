@@ -1,4 +1,3 @@
-import Image from "next/image";
 import React from "react";
 import Link from "next/link";
 import NavBar from "./components/NavBar";
@@ -6,47 +5,38 @@ import Footer from "./components/Footer";
 
 const DashLandingPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      {/* Navbar */}
+    <div className="min-h-screen bg-white flex flex-col p-4">
       <NavBar />
 
-      {/* Main Content */}
-      <main className="flex-grow flex flex-col items-center px-4 py-16 max-w-4xl mx-auto justify-center">
-        <Image
-          src="/logo.png"
-          width={120}
-          height={120}
-          alt="DASH Logo"
-          className="mb-8"
-        />
-
-        <h1 className="text-4xl font-bold mb-4 text-center">
+      <section className=" bg-[#f0efea] h-[80vh] flex justify-center items-center flex-col rounded-xl">
+        <div className=" mx-auto px-4 text-center">
+          <h1 className="text-8xl font-bold mb-6 big-shoulders-inline">
+            Build with <span className="font-normal rock-salt-regular">DASH</span>
+          </h1>
+          
+          <p className="text-3xl text-gray-700 quicksand">
           Distributed Adaptive Serverless Hosting
-        </h1>
-
-        <p className="text-xl text-gray-600 mb-8 text-center max-w-2xl">
-          A peer-to-peer distributed system for executing serverless functions
-          and deploying tasks efficiently using Tauri + Next.js
-        </p>
-
-        <div className="flex gap-4 mb-12 flex-col justify-center items-center">
-          <Link
-            href="/download"
-            className="bg-black text-white px-6 py-3 rounded-full font-medium hover:bg-gray-800 transition flex items-center justify-center gap-2"
+          </p>
+          <p className="py-4">A peer-to-peer distributed system for executing serverless functions and deploying tasks efficiently  </p>
+          
+        
+          
+          <Link 
+            href="/download" 
+            className="inline-flex items-center text-sm text-gray-200 hover:text-gray-100 bg-[#2d2d2d] px-6 py-2 rounded-full"
           >
-            Download <span className="text-lg -mt-[2]">↓</span>
+            DOWNLOAD  
           </Link>
-          {/* <Link
-            href="/docs"
-            className="border border-gray-200 px-6 py-3 rounded-full font-medium hover:bg-gray-50 transition flex items-center gap-2"
-          >
-            View Documentation
-          </Link> */}
-          <h2 className="text-sm text-gray-500 md:max-w-[70%] text-center ">
-            Available for macOS, Linux, and Windows
-          </h2>
         </div>
-      </main>
+      </section>
+
+     
+
+      {/* <div className="fixed bottom-6 right-6 z-50">
+        <button className="flex items-center px-4 py-2 bg-black text-white rounded-full text-sm font-medium">
+          Download <span className="ml-2 bg-white text-black rounded-full px-2 flex items-center justify-center">DASH</span>
+        </button>
+      </div> */}
 
       <Footer />
     </div>
