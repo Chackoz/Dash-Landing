@@ -285,7 +285,7 @@ const DashboardPage = () => {
       {/* Navbar */}
       <NavBar />
 
-      <div className="p-4 md:p-6 space-y-6">
+      <div className="p-4 md:p-6 space-y-6 bg-[#f0efea] rounded-xl">
         {/* Stats Overview */}
         <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           <StatCard
