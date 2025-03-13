@@ -10,8 +10,8 @@ const DashLandingPage: React.FC = () => {
 
       <section className=" bg-[#f0efea] h-[80vh] flex justify-center items-center flex-col rounded-xl">
         <div className=" mx-auto px-4 text-center">
-          <h1 className="text-8xl font-bold mb-6 big-shoulders-inline">
-            Build with <span className="font-normal rock-salt-regular">DASH</span>
+          <h1 className="text-8xl font-normal mb-6 big-shoulders-inline">
+            Build with <span className="font-bold public-sans">DASH</span>
           </h1>
           
           <p className="text-3xl text-gray-700 quicksand">

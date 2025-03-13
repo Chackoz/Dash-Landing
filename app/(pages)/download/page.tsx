@@ -1,10 +1,10 @@
-"use client"
-import React, { useEffect, useState } from 'react';
-import { Download, Check} from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import NavBar from '@/app/components/NavBar';
-import Footer from '@/app/components/Footer';
+"use client";
+import React, { useEffect, useState } from "react";
+import { Download, Check } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import NavBar from "@/app/components/NavBar";
+import Footer from "@/app/components/Footer";
 
 interface Release {
   tag_name: string;
@@ -30,7 +30,7 @@ const DownloadPage: React.FC = () => {
         if (!response.ok) throw new Error("Failed to fetch latest release");
         const release: Release = await response.json();
         setLatestVersion(release.tag_name);
-        
+
         const detectedOS = getOSSpecificDetails().os;
         setSelectedOS(detectedOS);
       } catch (error) {
@@ -44,29 +44,29 @@ const DownloadPage: React.FC = () => {
   }, []);
 
   const getOSSpecificDetails = (): { os: string; icon: string } => {
-    if (typeof window === 'undefined') return { os: 'Windows', icon: '🪟' };
-    
+    if (typeof window === "undefined") return { os: "Windows", icon: "🪟" };
+
     const userAgent = window.navigator.userAgent.toLowerCase();
-    if (userAgent.includes('mac')) return { os: 'macOS', icon: '🍎' };
-    if (userAgent.includes('linux')) return { os: 'Linux', icon: '🐧' };
-    return { os: 'Windows', icon: '🪟' };
+    if (userAgent.includes("mac")) return { os: "macOS", icon: "🍎" };
+    if (userAgent.includes("linux")) return { os: "Linux", icon: "🐧" };
+    return { os: "Windows", icon: "🪟" };
   };
 
   const getDownloadUrl = (os: string): string => {
-    if (!latestVersion) return '';
-    const version = latestVersion.replace('v', ''); // Remove 'v' prefix if present
+    if (!latestVersion) return "";
+    const version = latestVersion.replace("v", ""); // Remove 'v' prefix if present
     const baseUrl = `https://github.com/Chackoz/Dash-Desktop/releases/download/${latestVersion}/`;
-    
+
     switch (os) {
-      case 'Windows':
+      case "Windows":
         return `${baseUrl}DASH_${version}_x64_en-US.msi`;
-      case 'macOS':
+      case "macOS":
         return `${baseUrl}DASH_${version}_aarch64.dmg`;
-      case 'Linux':
+      case "Linux":
         // You might want to add support for different Linux package formats
         return `${baseUrl}DASH_${version}_amd64.deb`;
       default:
-        return '';
+        return "";
     }
   };
 
@@ -75,10 +75,10 @@ const DownloadPage: React.FC = () => {
     if (!downloadUrl) return;
 
     setDownloadStarted(true);
-    
-    const link = document.createElement('a');
+
+    const link = document.createElement("a");
     link.href = downloadUrl;
-    link.download = downloadUrl.split('/').pop() || "";
+    link.download = downloadUrl.split("/").pop() || "";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -91,24 +91,24 @@ const DownloadPage: React.FC = () => {
   };
 
   const osOptions: OSOption[] = [
-    { os: 'macOS', icon: '🍎' },
-    { os: 'Linux', icon: '🐧' },
-    { os: 'Windows', icon: '🪟' }
+    { os: "macOS", icon: "🍎" },
+    { os: "Linux", icon: "🐧" },
+    { os: "Windows", icon: "🪟" },
   ];
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-between w-full p-4">
-      <NavBar/>
-      
+      <NavBar />
+
       <div className=" w-full space-y-4 md:space-y-8 text-center flex justify-center items-center flex-col bg-[#f0efea] h-[80vh] rounded-xl">
         <h1 className="text-4xl font-bold mb-2">Download DASH</h1>
-        
+
         <div className="grid grid-cols-3 gap-4 md:max-w-md mx-auto mb-8">
           {osOptions.map(({ os, icon }) => (
-            <Card 
+            <Card
               key={os}
               className={`p-4 flex flex-col items-center justify-center hover:bg-accent cursor-pointer transition-colors
-                ${selectedOS === os ? 'bg-accent' : ''}`}
+                ${selectedOS === os ? "bg-accent" : ""}`}
               onClick={() => handleOSSelect(os)}
             >
               <span className="text-2xl mb-2">{icon}</span>
@@ -118,8 +118,8 @@ const DownloadPage: React.FC = () => {
         </div>
 
         <div className="space-y-4">
-          <Button 
-            size="lg" 
+          <Button
+            size="lg"
             className="w-full max-w-md"
             variant="default"
             onClick={handleDownload}
@@ -130,19 +130,35 @@ const DownloadPage: React.FC = () => {
             ) : (
               <Download className="mr-2 h-4 w-4" />
             )}
-            {downloadStarted ? 'Download Started' : `Download for ${selectedOS}`}
+            {downloadStarted
+              ? "Download Started"
+              : `Download for ${selectedOS}`}
           </Button>
-          
+
           <p className="text-sm text-muted-foreground">
-            {isLoading ? "Checking version..." : `Latest version: ${latestVersion || 'Unknown'}`}
+            {isLoading
+              ? "Checking version..."
+              : `Latest version: ${latestVersion || "Unknown"}`}
           </p>
           <p className="text-sm text-muted-foreground">
-            Requires {selectedOS === 'Windows' ? 'Windows 10' : selectedOS === 'macOS' ? 'macOS 12' : 'Linux 2023.01.01'} or later
+            Requires{" "}
+            {selectedOS === "Windows"
+              ? "Windows 10"
+              : selectedOS === "macOS"
+              ? "macOS 12"
+              : "Linux 2023.01.01"}{" "}
+            or later
           </p>
         </div>
+        <a
+          href="https://github.com/Chackoz/Dash-Desktop"
+          className="underline  hover:text-gray-700 "
+        >
+          View Source Code
+        </a>
       </div>
 
-      <Footer/>
+      <Footer />
     </div>
   );
 };

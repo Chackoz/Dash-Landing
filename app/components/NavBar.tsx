@@ -37,7 +37,7 @@ function NavBar() {
     <nav className="sticky top-0 z-50 w-full flex flex-col bg-white ">
       <div className="px-4 md:px-6 py-3 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <Link href="/" className="font-bold text-3xl rock-salt-regular">
+          <Link href="/" className="font-bold text-3xl public-sans">
             DASH
           </Link>
         </div>
