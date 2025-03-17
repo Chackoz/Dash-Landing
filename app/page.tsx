@@ -11,7 +11,7 @@ const DashLandingPage: React.FC = () => {
       <section className=" bg-[#f0efea] min-h-full flex justify-center items-center flex-col rounded-xl flex-1">
         <div className=" mx-auto px-4 text-center">
          
-          <div className="text-[9rem] font-nanumMyeongjo">DASH</div>
+          <div className="md:text-[9rem] text-[30vw] font-nanumMyeongjo">DASH</div>
 
           <p className="text-3xl text-gray-700 font-rationale">
             Distributed Adaptive Serverless Hosting
