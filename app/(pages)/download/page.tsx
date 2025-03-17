@@ -100,7 +100,7 @@ const DownloadPage: React.FC = () => {
     <div className="min-h-screen bg-background flex flex-col items-center justify-between w-full p-4">
       <NavBar />
 
-      <div className=" w-full space-y-4 md:space-y-8 text-center flex justify-center items-center flex-col bg-[#f0efea] h-[80vh] rounded-xl">
+      <div className=" w-full space-y-4 md:space-y-8 text-center flex justify-center items-center flex-col bg-[#f0efea] flex-1 rounded-xl">
         <h1 className="text-4xl font-bold mb-2">Download DASH</h1>
 
         <div className="grid grid-cols-3 gap-4 md:max-w-md mx-auto mb-8">

@@ -37,7 +37,6 @@ interface FirebaseDataEntry<T> {
   [key: string]: T;
 }
 
-// Interfaces
 interface SystemMetadata {
   cpu: string;
   docker: boolean;
@@ -100,14 +99,14 @@ const TaskStatus: React.FC<TaskStatusProps> = ({ status }) => {
     pending: { icon: Clock, color: "text-orange-500" },
   }[status];
 
-  let Icon=Clock;
+  let Icon = Clock;
   if (config !== undefined) {
-    Icon = config.icon 
-  } 
+    Icon = config.icon;
+  }
 
   return (
     <Icon
-      className={`h-4 w-4 ${config?.color||"text-blue-100"} ${
+      className={`h-4 w-4 ${config?.color || "text-blue-100"} ${
         status === "running" ? "animate-spin" : ""
       }`}
     />
@@ -270,7 +269,7 @@ const DashboardPage = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-background p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-background p-4 flex items-center justify-center h-full">
         <Card>
           <CardContent className="p-6">
             <p className="text-lg">Please log in to view your dashboard</p>
@@ -281,13 +280,13 @@ const DashboardPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background p-4">
+    <div className="min-h-screen bg-background p-4 h-full">
       {/* Navbar */}
       <NavBar />
 
-      <div className="p-4 md:p-6 space-y-6 bg-[#f0efea] rounded-xl">
+      <div className="p-4 md:p-6 space-y-6 bg-[#f0efea] rounded-xl h-full flex flex-col flex-1">
         {/* Stats Overview */}
-        <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div className="md:grid gap-4 md:gap-6 flex flex-col  md:grid-cols-2 lg:grid-cols-3 h-full">
           <StatCard
             title="Your Active Nodes"
             value={stats.activeNodes}
@@ -339,7 +338,6 @@ const DashboardPage = () => {
           />
         </div>
 
-        {/* Chart */}
         <Card className="w-full">
           <CardHeader>
             <CardTitle className="text-sm font-medium">
@@ -370,10 +368,7 @@ const DashboardPage = () => {
             </ResponsiveContainer>
           </CardContent>
         </Card>
-
-        {/* Tasks and Nodes Grid */}
-        <div className="grid gap-6 grid-cols-1 lg:grid-cols-2 h-[35vh]">
-          {/* Recent Tasks */}
+        <div className="grid gap-6 grid-cols-1 lg:grid-cols-2 min-h-[35vh] h-full">
           <Card>
             <CardHeader>
               <CardTitle className="text-sm font-medium">

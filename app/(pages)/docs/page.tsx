@@ -6,7 +6,6 @@ import {
   Download,
   Activity,
   Container,
-  CheckCircle,
   Globe,
   Terminal,
   BookOpen,
@@ -40,7 +39,7 @@ type SectionName =
 
 const DashDocumentation = () => {
   const [activeSection, setActiveSection] = useState<SectionName>("overview");
-  const [searchQuery, setSearchQuery] = useState("");
+  // const [searchQuery, setSearchQuery] = useState("");
 
   const sidebarContent: SidebarContent = {
     overview: {
@@ -73,79 +72,173 @@ const DashDocumentation = () => {
             </CardHeader>
             <CardContent className="text-slate-600 space-y-4">
               <p className="leading-relaxed">
-                DASH is a powerful distributed code execution system that
-                enables efficient task execution across multiple nodes. Built
-                with Next.js and Tauri, it provides a desktop client interface
-                while leveraging Firebase for task management and coordination.
+                DASH (Distributed Adaptive Serverless Hosting) represents a
+                revolutionary approach to serverless computing that
+                fundamentally reimagines how cloud functions are deployed and
+                executed. Unlike traditional serverless platforms that rely on
+                centralized cloud infrastructure, DASH introduces a paradigm
+                shift by implementing a decentralized, peer-to-peer network for
+                function hosting and execution.
               </p>
               <p className="leading-relaxed">
-                With native Docker support, DASH allows for consistent execution
-                environments across nodes, while its Python-based scheduler
-                ensures optimal task distribution based on available resources.
+                At its core, DASH employs containerization technology to create
+                isolated, secure environments for function execution. Each node
+                in the DASH network can both host and execute functions,
+                creating a resilient mesh of computational resources. The
+                system&apos;s adaptive nature allows it to automatically scale
+                and redistribute workloads based on network capacity and demand.
+              </p>
+              <p className="leading-relaxed">
+                By spreading functions across multiple nodes, the system
+                maintains reliability even if some nodes go offline - unlike
+                traditional cloud setups where an outage at a single data center
+                could bring everything to a halt.
               </p>
             </CardContent>
           </Card>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <Card className="border border-slate-200">
+            <Card className="mb-8 border border-slate-200">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                  Key Features
-                </CardTitle>
+                <CardTitle className="text-2xl">Task Execution Flow</CardTitle>
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-4">
-                  <li className="flex items-center gap-3">
-                    <Server className="h-5 w-5 text-blue-500" />
-                    <span>Distributed task execution across nodes</span>
+              <CardContent className="text-slate-600">
+                <ol className="list-decimal pl-5 space-y-4">
+                  <li className="pl-2">
+                    <p className="font-semibold">
+                      User Submits Code for Execution
+                    </p>
+                    <ul className="list-disc pl-5 mt-2">
+                      <li>Users input code via the DASH desktop application</li>
+                      <li>
+                        Select execution mode: local or distributed via Docker
+                      </li>
+                      <li>Task is added to Firebase with status: queued</li>
+                    </ul>
                   </li>
-                  <li className="flex items-center gap-3">
-                    <Container className="h-5 w-5 text-blue-500" />
-                    <span>
-                      Docker container support for consistent environments
-                    </span>
+                  <li className="pl-2">
+                    <p className="font-semibold">
+                      Scheduler Assigns Task to a Node
+                    </p>
+                    <ul className="list-disc pl-5 mt-2">
+                      <li>
+                        Python-based scheduler scans Firebase for queued tasks
+                      </li>
+                      <li>
+                        Selects the best available node based on load balancing
+                      </li>
+                      <li>Updates task metadata and status to: assigned</li>
+                    </ul>
                   </li>
-                  <li className="flex items-center gap-3">
-                    <Database className="h-5 w-5 text-blue-500" />
-                    <span>Firebase-powered task management</span>
+                  <li className="pl-2">
+                    <p className="font-semibold">
+                      Node Fetches and Executes the Task
+                    </p>
+                    <ul className="list-disc pl-5 mt-2">
+                      <li>
+                        Assigned node retrieves task details from Firebase
+                      </li>
+                      <li>Pulls specified Docker image if required</li>
+                      <li>Executes code in container or natively</li>
+                    </ul>
                   </li>
-                  <li className="flex items-center gap-3">
-                    <Activity className="h-5 w-5 text-blue-500" />
-                    <span>Real-time monitoring and updates</span>
+                  <li className="pl-2">
+                    <p className="font-semibold">
+                      Task Completion and Result Storage
+                    </p>
+                    <ul className="list-disc pl-5 mt-2">
+                      <li>Execution node stores output in Firebase</li>
+                      <li>Task status updated to: completed</li>
+                      <li>User retrieves results via DASH client</li>
+                    </ul>
                   </li>
-                </ul>
+                </ol>
               </CardContent>
             </Card>
+            <div className="h-full flex flex-col gap-4">
+              <Card className="border border-slate-200">
+                <CardHeader>
+                  <CardTitle className="text-2xl">Future Development</CardTitle>
+                </CardHeader>
+                <CardContent className="text-slate-600">
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="font-semibold text-lg">
+                        Intelligent Task Scheduling
+                      </h3>
+                      <p>
+                        Machine learning-based load prediction models to
+                        optimize node assignments and anticipate workload
+                        spikes.
+                      </p>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg">
+                        Real-Time Monitoring
+                      </h3>
+                      <p>
+                        Enhanced visualization dashboard for live execution logs
+                        and system performance metrics.
+                      </p>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg">
+                        Enhanced Security
+                      </h3>
+                      <p>
+                        Role-based access control (RBAC) and improved sandboxing
+                        mechanisms for secure execution.
+                      </p>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg">
+                        Federated Execution
+                      </h3>
+                      <p>
+                        Cross-cluster scalability for distributed execution
+                        across multiple geographic locations.
+                      </p>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg">API Integration</h3>
+                      <p>
+                        RESTful API for third-party applications to submit
+                        execution requests programmatically.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-            <Card className="border border-slate-200">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Cpu className="h-5 w-5 text-green-500" />
-                  System Components
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-4">
-                  <li className="flex items-center gap-3">
-                    <Globe className="h-5 w-5 text-blue-500" />
-                    <span>Next.js + Tauri Desktop Client</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <Code className="h-5 w-5 text-blue-500" />
-                    <span>Python-based Task Scheduler</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <Database className="h-5 w-5 text-blue-500" />
-                    <span>Firebase Task Management</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <Container className="h-5 w-5 text-blue-500" />
-                    <span>Docker Execution Environment</span>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
+              <Card className="border border-slate-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Cpu className="h-5 w-5 text-green-500" />
+                    System Components
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-4">
+                    <li className="flex items-center gap-3">
+                      <Globe className="h-5 w-5 text-blue-500" />
+                      <span>Next.js + Tauri Desktop Client</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <Code className="h-5 w-5 text-blue-500" />
+                      <span>Python-based Task Scheduler</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <Database className="h-5 w-5 text-blue-500" />
+                      <span>Firebase Task Management</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <Container className="h-5 w-5 text-blue-500" />
+                      <span>Docker Execution Environment</span>
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </>
       ),
@@ -213,15 +306,27 @@ const DashDocumentation = () => {
               </h4>
               <pre className="bg-slate-100 p-4 rounded-lg overflow-x-auto text-sm">
                 {`{
-  "taskId": "task-001",
+  "taskId": "-0J2GAEL3UtyeEty5tP",
   "type": "docker",
-  "code": "print('Hello, World!')",
-  "userId": "user123",
-  "status": "pending",
-  "requirements": {
-    "cpu": "2",
-    "memory": "4G",
-    "gpu": false
+  "status": "completed",
+  "assignedAt": "2025-02-14T07:03:21.991708+00:00",
+  "assignedTo": "-OFgsZE8ngqBs-sw3wlM",
+  "clientId": "-OEjYpjcCR5E2qEvNwYJ",
+  "completedAt": "2025-02-14T07:03:27.539Z",
+  "createdAt": "2025-02-14T07:03:09.024Z",
+  "dockerConfig": {
+    "cpuLimit": "1",
+    "image": "hello-world",
+    "memoryLimit": "512m"
+  },
+  "doneUserId": "NU3SeYJxdDZkm98Xeyb9NdsZaUW2",
+  "output": "Hello from Docker! This message shows that your installation appears to be working correctly.",
+  "runtime": 4,
+  "schedulerMetadata": {
+    "startedAt": "2025-02-14T07:03:22.985Z",
+    "status": "completed",
+    "taskType": "docker",
+    "userId": "Jzc9LoS0UshJzyUSxgnNRitJmF33"
   }
 }`}
               </pre>
@@ -349,17 +454,30 @@ docker --version
               <pre className="bg-slate-100 p-4 rounded-lg overflow-x-auto text-sm">
                 {`version: '3'
 services:
-  task:
-    image: my-task:latest
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 4G
+  dash-task:
+    image: hello-world
+    container_name: dash-task
+    cpus: '1'
+    mem_limit: 512m
     security_opt:
-      - no-new-privileges
+      - no-new-privileges:true
     networks:
-      - dash-network`}
+      - dash-network
+    environment:
+      - TASK_ID=-0J2GAEL3UtyeEty5tP
+      - CLIENT_ID=-OEjYpjcCR5E2qEvNwYJ
+    volumes:
+      - ./task-logs:/var/log/dash
+    labels:
+      - "com.dash.taskType=docker"
+      - "com.dash.assignedTo=-OFgsZE8ngqBs-sw3wlM"
+      - "com.dash.status=pending"
+
+networks:
+  dash-network:
+    driver: bridge
+    labels:
+      - "com.dash.managed=true`}
               </pre>
             </div>
           </CardContent>
@@ -403,7 +521,7 @@ services:
         <div className="w-64 bg-[#f7f7f7] border-r border-slate-200 hidden lg:block overflow-y-auto">
           <div className="p-4 space-y-6">
             {/* Search bar */}
-            <div className="relative">
+            {/* <div className="relative">
               <input
                 type="text"
                 placeholder="Search documentation..."
@@ -424,7 +542,7 @@ services:
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                 />
               </svg>
-            </div>
+            </div> */}
 
             {/* Navigation sections */}
             {Object.entries(sections).map(([category, sectionNames]) => (
@@ -463,7 +581,6 @@ services:
               <span className="text-slate-500">
                 {
                   Object.entries(sections).find(([, sectionNames]) =>
-                   
                     sectionNames.includes(activeSection)
                   )?.[0]
                 }
